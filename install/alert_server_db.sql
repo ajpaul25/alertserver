@@ -13,7 +13,7 @@ SET client_min_messages = warning;
 -- Name: alert_server; Type: DATABASE; Schema: -; Owner: alert_server
 --
 
-CREATE DATABASE alert_server WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252';
+CREATE DATABASE alert_server ;
 
 
 ALTER DATABASE alert_server OWNER TO alert_server;
