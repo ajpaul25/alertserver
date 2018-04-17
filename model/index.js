@@ -1,23 +1,25 @@
 
-var pgNative = require('pg-native');
-var conString = "postgres://alert:%40l3rt@localhost:5432/alert_server";
+var pg = require('pg');
+var conString = "postgres://alert:alert@localhost:5432/alert_server";
 
-var client = new pgNative()
-client.connectSync(conString);
+var client;
 
 
 module.exports = {
-
-  getClients: function(){
-    var rows = client.querySync("Select * from client");
-    return rows[0].client_name;
+  init: async function(){
+    client = new pg.Client(conString);
+    await client.connect();
   },
-  getClientIp: function(name){
-    var rows = client.querySync("Select client_ip from client where client_name = $1", [name]);
-    return rows[0].client_ip;
+  getClients: async function(){
+    var res = client.querySync("Select * from client");
+    return res.rows[0].client_name;
   },
-  getClientAlertsCount: function(name){
-    var rows = client.querySync('\
+  getClientIp: async function(name){
+    var res = await client.query("Select client_ip from client where client_name = $1", [name]);
+    return res.rows[0].client_ip;
+  },
+  getClientAlertsCount: async function(name){
+    var res = await client.query('\
       Select count(alert_id) numalerts \
       from alert \
       where alert_start <= current_timestamp \
@@ -29,11 +31,11 @@ module.exports = {
       client c \
       on cgm.client_id = c.client_id \
       where client_name = $1) \
-    ', [name]);
-    return rows[0].numalerts;
+      ', [name]);
+    return res.rows[0].numalerts;
   },
-  getClientAlerts: function(name){
-    var rows = client.querySync("Select * \
+  getClientAlerts: async function(name){
+    var res = await client.query("Select * \
       from alert \
       where alert_start <= current_timestamp \
       and alert_end >= current_timestamp \
@@ -44,7 +46,7 @@ module.exports = {
       client c \
       on cgm.client_id = c.client_id \
       where client_name = $1)", [name]);
-    return rows;
+    return res.rows;
   }
 
 };
