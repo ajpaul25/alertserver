@@ -11,7 +11,7 @@ const Routes = require('./routes.js');
 
 const server = Hapi.server({
     port: Settings.port,
-    host: 'localhost'
+    host: Settings.host
 });
 
 server.route(Routes);
